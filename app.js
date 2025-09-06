@@ -279,7 +279,8 @@ app.get('/register', async (req, res) => {
   res.render('register', {
     title: 'Register',
     error: null,
-    user: {}
+    user: {},
+    csrfToken: res.locals.csrfToken
   });
 });
 
