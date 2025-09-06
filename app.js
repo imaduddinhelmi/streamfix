@@ -272,6 +272,75 @@ const loginDelayMiddleware = async (req, res, next) => {
   await new Promise(resolve => setTimeout(resolve, 1000));
   next();
 };
+app.get('/register', async (req, res) => {
+  if (req.session.userId) {
+    return res.redirect('/dashboard');
+  }
+  res.render('register', {
+    title: 'Register',
+    error: null
+  });
+});
+
+app.post('/register', upload.single('avatar'), [
+  body('username')
+    .trim()
+    .isLength({ min: 3, max: 20 })
+    .withMessage('Username must be between 3 and 20 characters')
+    .matches(/^[a-zA-Z0-9_]+$/)
+    .withMessage('Username can only contain letters, numbers, and underscores'),
+  body('password')
+    .isLength({ min: 8 })
+    .withMessage('Password must be at least 8 characters long')
+    .matches(/[a-z]/).withMessage('Password must contain at least one lowercase letter')
+    .matches(/[A-Z]/).withMessage('Password must contain at least one uppercase letter')
+    .matches(/[0-9]/).withMessage('Password must contain at least one number'),
+  body('confirmPassword')
+    .custom((value, { req }) => value === req.body.password)
+    .withMessage('Passwords do not match')
+], async (req, res) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      console.log('Validation errors:', errors.array());
+      return res.render('register', {
+        title: 'Register',
+        user: { username: req.body.username || '' },
+        error: errors.array()[0].msg
+      });
+    }
+    const existingUsername = await User.findByUsername(req.body.username);
+    if (existingUsername) {
+      return res.render('register', {
+        title: 'Register',
+        user: { username: req.body.username || '' },
+        error: 'Username is already taken'
+      });
+    }
+    const avatarPath = req.file ? `/uploads/avatars/${req.file.filename}` : null;
+    const userId = uuidv4();
+    await User.create({
+      id: userId,
+      username: req.body.username,
+      password: req.body.password,
+      avatar_path: avatarPath,
+    });
+    req.session.userId = userId;
+    req.session.username = req.body.username;
+    if (avatarPath) {
+      req.session.avatar_path = avatarPath;
+    }
+    return res.redirect('/dashboard');
+  } catch (error) {
+    console.error('Registration error:', error);
+    res.render('register', {
+      title: 'Register',
+      user: { username: req.body.username || '' },
+      error: 'An error occurred during registration. Please try again.'
+    });
+  }
+});
+
 app.get('/login', async (req, res) => {
   if (req.session.userId) {
     return res.redirect('/dashboard');
@@ -458,6 +527,34 @@ app.get('/gallery', isAuthenticated, async (req, res) => {
     res.redirect('/dashboard');
   }
 });
+app.get('/users', isAuthenticated, async (req, res) => {
+  try {
+    const currentUser = await User.findById(req.session.userId);
+    if (!currentUser) {
+      req.session.destroy();
+      return res.redirect('/login');
+    }
+
+    // Get all users for management
+    const users = await new Promise((resolve, reject) => {
+      db.all('SELECT id, username, avatar_path, created_at FROM users ORDER BY created_at DESC', [], (err, rows) => {
+        if (err) reject(err);
+        else resolve(rows);
+      });
+    });
+
+    res.render('users', {
+      title: 'User Management',
+      active: 'users',
+      user: currentUser,
+      users: users
+    });
+  } catch (error) {
+    console.error('Users error:', error);
+    res.redirect('/dashboard');
+  }
+});
+
 app.get('/settings', isAuthenticated, async (req, res) => {
   try {
     const user = await User.findById(req.session.userId);
@@ -1466,6 +1563,69 @@ app.get('/api/streams/:id/logs', isAuthenticated, async (req, res) => {
     res.status(500).json({ success: false, error: 'Failed to fetch stream logs' });
   }
 });
+app.delete('/api/users/:id', isAuthenticated, async (req, res) => {
+  try {
+    const userId = req.params.id;
+
+    // Prevent users from deleting themselves
+    if (userId === req.session.userId) {
+      return res.status(400).json({
+        success: false,
+        error: 'You cannot delete your own account'
+      });
+    }
+
+    // Check if user exists
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        error: 'User not found'
+      });
+    }
+
+    // Delete user's videos and related data
+    await new Promise((resolve, reject) => {
+      db.run('DELETE FROM videos WHERE user_id = ?', [userId], (err) => {
+        if (err) reject(err);
+        else resolve();
+      });
+    });
+
+    // Delete user's streams and related data
+    await new Promise((resolve, reject) => {
+      db.run('DELETE FROM streams WHERE user_id = ?', [userId], (err) => {
+        if (err) reject(err);
+        else resolve();
+      });
+    });
+
+    // Delete user's stream history
+    await new Promise((resolve, reject) => {
+      db.run('DELETE FROM stream_history WHERE user_id = ?', [userId], (err) => {
+        if (err) reject(err);
+        else resolve();
+      });
+    });
+
+    // Finally delete the user
+    await new Promise((resolve, reject) => {
+      db.run('DELETE FROM users WHERE id = ?', [userId], (err) => {
+        if (err) reject(err);
+        else resolve();
+      });
+    });
+
+    res.json({ success: true, message: 'User deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting user:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to delete user'
+    });
+  }
+});
+
 app.get('/api/server-time', (req, res) => {
   const now = new Date();
   const day = String(now.getDate()).padStart(2, '0');

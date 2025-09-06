@@ -145,11 +145,6 @@
             <span>Stop All</span>
           </button>
         </div>
-        <button onclick="openManageAccountsModal()"
-          class="w-full sm:w-auto flex items-center justify-center gap-2 bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg transition-colors">
-          <i class="ti ti-settings"></i>
-          <span>Manage Accounts</span>
-        </button>
         <button onclick="openNewStreamModal()"
           class="w-full sm:w-auto flex items-center justify-center gap-2 bg-primary hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors">
           <i class="ti ti-plus"></i>
@@ -259,20 +254,9 @@
                   <div class="space-y-3">
                     <div class="relative">
                       <input type="text" id="rtmpUrl" name="rtmpUrl"
-                        class="w-full pl-10 pr-12 py-2.5 bg-dark-700 border border-gray-600 rounded-lg focus:border-primary focus:ring-1 focus:ring-primary"
-                        placeholder="RTMP URL" required>
+                        class="w-full pl-10 py-2.5 bg-dark-700 border border-gray-600 rounded-lg focus:border-primary focus:ring-1 focus:ring-primary"
+                        placeholder="RTMP URL" value="rtmp://a.rtmp.youtube.com/live2" required readonly>
                       <i class="ti ti-link absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                      <button type="button" id="platformSelector"
-                        class="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center rounded-full hover:bg-dark-600 transition-colors"
-                        aria-label="Select platform">
-                        <i class="ti ti-list-check text-gray-400 hover:text-primary"></i>
-                      </button>
-                      <div id="platformDropdown"
-                        class="hidden absolute z-10 right-0 mt-1 w-48 bg-dark-700 rounded-lg border border-gray-600 shadow-lg overflow-hidden">
-                        <div class="py-1" id="platformOptions">
-                          <!-- Platform options will be loaded here -->
-                        </div>
-                      </div>
                     </div>
                     <div class="relative">
                       <input type="password" id="streamKey" name="streamKey"
@@ -499,49 +483,9 @@
                   <div class="space-y-3">
                     <div class="relative">
                       <input type="text" id="editRtmpUrl" name="rtmpUrl"
-                        class="w-full pl-10 pr-12 py-2.5 bg-dark-700 border border-gray-600 rounded-lg focus:border-primary focus:ring-1 focus:ring-primary"
-                        placeholder="RTMP URL" required>
+                        class="w-full pl-10 py-2.5 bg-dark-700 border border-gray-600 rounded-lg focus:border-primary focus:ring-1 focus:ring-primary"
+                        placeholder="RTMP URL" value="rtmp://a.rtmp.youtube.com/live2" required readonly>
                       <i class="ti ti-link absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                      <button type="button" id="editPlatformSelector"
-                        class="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center rounded-full hover:bg-dark-600 transition-colors"
-                        aria-label="Select platform">
-                        <i class="ti ti-list-check text-gray-400 hover:text-primary"></i>
-                      </button>
-                      <div id="editPlatformDropdown"
-                        class="hidden absolute z-10 right-0 mt-1 w-48 bg-dark-700 rounded-lg border border-gray-600 shadow-lg overflow-hidden">
-                        <div class="py-1">
-                          <button type="button"
-                            class="platform-option w-full flex items-center px-4 py-2 hover:bg-dark-600" 
-                            data-url="rtmp://a.rtmp.youtube.com/live2">
-                            <i class="ti ti-brand-youtube text-red-500 text-base mr-2"></i>
-                            <span class="text-sm">YouTube</span>
-                          </button>
-                          <button type="button"
-                            class="platform-option w-full flex items-center px-4 py-2 hover:bg-dark-600" 
-                            data-url="rtmps://live-api-s.facebook.com:443/rtmp">
-                            <i class="ti ti-brand-facebook text-blue-500 text-base mr-2"></i>
-                            <span class="text-sm">Facebook</span>
-                          </button>
-                          <button type="button"
-                            class="platform-option w-full flex items-center px-4 py-2 hover:bg-dark-600" 
-                            data-url="rtmps://ingest.global.live.prod.tiktok.com/live">
-                            <i class="ti ti-brand-tiktok text-black text-base mr-2"></i>
-                            <span class="text-sm">TikTok</span>
-                          </button>
-                          <button type="button"
-                            class="platform-option w-full flex items-center px-4 py-2 hover:bg-dark-600" 
-                            data-url="rtmp://live.shopee.co.id/live">
-                            <i class="ti ti-brand-shopee text-orange-500 text-base mr-2"></i>
-                            <span class="text-sm">Shopee Live</span>
-                          </button>
-                          <button type="button"
-                            class="platform-option w-full flex items-center px-4 py-2 hover:bg-dark-600" 
-                            data-url="rtmp://live.twitch.tv/live">
-                            <i class="ti ti-brand-twitch text-purple-500 text-base mr-2"></i>
-                            <span class="text-sm">Twitch</span>
-                          </button>
-                        </div>
-                      </div>
                     </div>
                     <div class="relative">
                       <input type="password" id="editStreamKey" name="streamKey"
@@ -704,87 +648,6 @@
     </div>
   </div>
 
-  <!-- Manage Accounts Modal -->
-  <div id="manageAccountsModal" class="fixed inset-0 bg-black/50 z-50 hidden modal-overlay overflow-y-auto">
-    <div class="flex min-h-screen items-center justify-center p-4">
-      <div class="bg-dark-800 rounded-lg shadow-xl w-full max-w-2xl modal-container flex flex-col max-h-[90vh]">
-        <div class="flex-shrink-0 flex items-center justify-between p-4 sm:px-6 sm:py-6 border-b border-gray-700">
-          <h3 class="text-lg font-semibold">Manage Streaming Accounts</h3>
-          <button onclick="closeManageAccountsModal()" class="text-gray-400 hover:text-white">
-            <i class="ti ti-x text-xl"></i>
-          </button>
-        </div>
-        <div class="p-4 sm:px-6 pt-1 pb-4 overflow-y-auto flex-grow">
-          <div class="space-y-4">
-            <div class="flex items-center justify-between">
-              <h4 class="text-md font-medium">Your Accounts</h4>
-              <button onclick="openAddAccountModal()"
-                class="flex items-center gap-2 bg-primary hover:bg-blue-600 text-white px-3 py-2 rounded-lg transition-colors">
-                <i class="ti ti-plus"></i>
-                <span>Add Account</span>
-              </button>
-            </div>
-
-            <div id="accountsList" class="space-y-3">
-              <!-- Accounts will be loaded here -->
-            </div>
-          </div>
-        </div>
-        <div class="flex-shrink-0 flex items-center justify-end gap-3 p-4 sm:px-6 sm:py-6 border-t border-gray-700">
-          <button onclick="closeManageAccountsModal()"
-            class="px-5 py-2.5 text-sm font-medium text-gray-300 hover:text-white transition-colors">
-            Close
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Add Account Modal -->
-  <div id="addAccountModal" class="fixed inset-0 bg-black/50 z-50 hidden modal-overlay overflow-y-auto">
-    <div class="flex min-h-screen items-center justify-center p-4">
-      <div class="bg-dark-800 rounded-lg shadow-xl w-full max-w-md modal-container">
-        <div class="flex items-center justify-between p-4 sm:px-6 sm:py-6 border-b border-gray-700">
-          <h3 class="text-lg font-semibold">Add New Account</h3>
-          <button onclick="closeAddAccountModal()" class="text-gray-400 hover:text-white">
-            <i class="ti ti-x text-xl"></i>
-          </button>
-        </div>
-        <div class="p-4 sm:px-6">
-          <form id="addAccountForm" class="space-y-4">
-            <div>
-              <label class="text-sm font-medium text-white block mb-2">Platform Name</label>
-              <input type="text" id="accountPlatform" name="platform"
-                class="w-full px-4 py-2.5 bg-dark-700 border border-gray-600 rounded-lg focus:border-primary focus:ring-1 focus:ring-primary"
-                placeholder="e.g., YouTube, Facebook, Twitch" required>
-            </div>
-            <div>
-              <label class="text-sm font-medium text-white block mb-2">RTMP URL</label>
-              <input type="text" id="accountRtmpUrl" name="rtmpUrl"
-                class="w-full px-4 py-2.5 bg-dark-700 border border-gray-600 rounded-lg focus:border-primary focus:ring-1 focus:ring-primary"
-                placeholder="rtmp://..." required>
-            </div>
-            <div>
-              <label class="text-sm font-medium text-white block mb-2">Stream Key</label>
-              <input type="password" id="accountStreamKey" name="streamKey"
-                class="w-full px-4 py-2.5 bg-dark-700 border border-gray-600 rounded-lg focus:border-primary focus:ring-1 focus:ring-primary"
-                placeholder="Your stream key" required>
-            </div>
-          </form>
-        </div>
-        <div class="flex items-center justify-end gap-3 p-4 sm:px-6 sm:py-6 border-t border-gray-700">
-          <button onclick="closeAddAccountModal()"
-            class="px-5 py-2.5 text-sm font-medium text-gray-300 hover:text-white transition-colors">
-            Cancel
-          </button>
-          <button type="submit" form="addAccountForm"
-            class="px-5 py-2.5 text-sm font-medium bg-primary hover:bg-blue-600 text-white rounded-lg transition-colors">
-            Add Account
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
 
   <style>
     .video-js {
@@ -1841,132 +1704,6 @@
       updateBulkButtons();
     });
 
-    // Account management functions
-    function openManageAccountsModal() {
-      loadAccounts();
-      const modal = document.getElementById('manageAccountsModal');
-      document.body.style.overflow = 'hidden';
-      modal.classList.remove('hidden');
-      requestAnimationFrame(() => {
-        modal.classList.add('active');
-      });
-    }
-
-    function closeManageAccountsModal() {
-      const modal = document.getElementById('manageAccountsModal');
-      document.body.style.overflow = 'auto';
-      modal.classList.remove('active');
-      setTimeout(() => {
-        modal.classList.add('hidden');
-      }, 200);
-    }
-
-    function openAddAccountModal() {
-      const modal = document.getElementById('addAccountModal');
-      document.body.style.overflow = 'hidden';
-      modal.classList.remove('hidden');
-      requestAnimationFrame(() => {
-        modal.classList.add('active');
-      });
-    }
-
-    function closeAddAccountModal() {
-      const modal = document.getElementById('addAccountModal');
-      document.body.style.overflow = 'auto';
-      modal.classList.remove('active');
-      setTimeout(() => {
-        modal.classList.add('hidden');
-      }, 200);
-      document.getElementById('addAccountForm').reset();
-    }
-
-    function loadAccounts() {
-      // For now, load from localStorage or initialize with defaults
-      const accounts = JSON.parse(localStorage.getItem('streamingAccounts') || '[]');
-      const accountsList = document.getElementById('accountsList');
-
-      if (accounts.length === 0) {
-        accountsList.innerHTML = `
-          <div class="text-center py-8">
-            <i class="ti ti-broadcast text-4xl text-gray-600 mb-2"></i>
-            <p class="text-gray-400">No accounts added yet</p>
-            <p class="text-gray-500 text-sm">Add your first streaming account to get started</p>
-          </div>
-        `;
-        return;
-      }
-
-      accountsList.innerHTML = accounts.map((account, index) => `
-        <div class="bg-dark-700 rounded-lg p-4">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center space-x-3">
-              <div class="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center">
-                <i class="ti ti-broadcast text-primary"></i>
-              </div>
-              <div>
-                <h5 class="font-medium">${account.platform}</h5>
-                <p class="text-sm text-gray-400">${account.rtmpUrl}</p>
-              </div>
-            </div>
-            <button onclick="deleteAccount(${index})"
-              class="text-red-400 hover:text-red-300 transition-colors">
-              <i class="ti ti-trash"></i>
-            </button>
-          </div>
-        </div>
-      `).join('');
-    }
-
-    function deleteAccount(index) {
-      if (!confirm('Are you sure you want to delete this account?')) {
-        return;
-      }
-
-      const accounts = JSON.parse(localStorage.getItem('streamingAccounts') || '[]');
-      accounts.splice(index, 1);
-      localStorage.setItem('streamingAccounts', JSON.stringify(accounts));
-      loadAccounts();
-    }
-
-    // Handle add account form submission
-    document.addEventListener('DOMContentLoaded', function() {
-      const addAccountForm = document.getElementById('addAccountForm');
-      if (addAccountForm) {
-        addAccountForm.addEventListener('submit', function(e) {
-          e.preventDefault();
-
-          const platform = document.getElementById('accountPlatform').value.trim();
-          const rtmpUrl = document.getElementById('accountRtmpUrl').value.trim();
-          const streamKey = document.getElementById('accountStreamKey').value.trim();
-
-          if (!platform || !rtmpUrl || !streamKey) {
-            alert('Please fill in all fields');
-            return;
-          }
-
-          const accounts = JSON.parse(localStorage.getItem('streamingAccounts') || '[]');
-
-          // Check for duplicate platform
-          if (accounts.some(acc => acc.platform.toLowerCase() === platform.toLowerCase())) {
-            alert('An account for this platform already exists');
-            return;
-          }
-
-          accounts.push({
-            platform,
-            rtmpUrl,
-            streamKey,
-            id: Date.now()
-          });
-
-          localStorage.setItem('streamingAccounts', JSON.stringify(accounts));
-
-          alert('Account added successfully!');
-          closeAddAccountModal();
-          loadAccounts();
-        });
-      }
-    });
     function startCountdowns() {
       const updateTimers = () => {
         document.querySelectorAll('[data-schedule-time]').forEach(el => {
@@ -2369,97 +2106,7 @@
       startLiveTimers();
       startCountdowns();
     });
-    function loadPlatformOptions() {
-      const platformOptionsContainer = document.getElementById('platformOptions');
-      if (!platformOptionsContainer) return;
 
-      const defaultPlatforms = [
-        { name: 'YouTube', url: 'rtmp://a.rtmp.youtube.com/live2', icon: 'ti-brand-youtube', color: 'text-red-500' },
-        { name: 'Facebook', url: 'rtmps://live-api-s.facebook.com:443/rtmp', icon: 'ti-brand-facebook', color: 'text-blue-500' },
-        { name: 'TikTok', url: 'rtmps://ingest.global.live.prod.tiktok.com/live', icon: 'ti-brand-tiktok', color: 'text-black' },
-        { name: 'Shopee Live', url: 'rtmp://live.shopee.co.id/live', icon: 'ti-brand-shopee', color: 'text-orange-500' },
-        { name: 'Twitch', url: 'rtmp://live.twitch.tv/live', icon: 'ti-brand-twitch', color: 'text-purple-500' }
-      ];
-
-      const customAccounts = JSON.parse(localStorage.getItem('streamingAccounts') || '[]');
-
-      const allPlatforms = [...defaultPlatforms, ...customAccounts.map(acc => ({
-        name: acc.platform,
-        url: acc.rtmpUrl,
-        icon: 'ti-broadcast',
-        color: 'text-primary',
-        custom: true,
-        streamKey: acc.streamKey
-      }))];
-
-      platformOptionsContainer.innerHTML = allPlatforms.map(platform => `
-        <button type="button"
-          class="platform-option w-full flex items-center px-4 py-2 hover:bg-dark-600"
-          data-url="${platform.url}"
-          data-platform="${platform.name}"
-          ${platform.streamKey ? `data-stream-key="${platform.streamKey}"` : ''}>
-          <i class="${platform.icon} ${platform.color} text-base mr-2"></i>
-          <span class="text-sm">${platform.name}</span>
-        </button>
-      `).join('');
-
-      // Re-attach event listeners
-      const platformOptions = platformOptionsContainer.querySelectorAll('.platform-option');
-      platformOptions.forEach(option => {
-        option.addEventListener('click', function () {
-          const url = this.getAttribute('data-url');
-          const platform = this.getAttribute('data-platform');
-          const streamKey = this.getAttribute('data-stream-key');
-
-          document.getElementById('rtmpUrl').value = url;
-          if (streamKey) {
-            document.getElementById('streamKey').value = streamKey;
-          }
-
-          // Update platform display
-          const platformDisplay = document.querySelector('[data-platform-display]');
-          if (platformDisplay) {
-            platformDisplay.textContent = platform;
-          }
-
-          platformDropdown.classList.add('hidden');
-        });
-      });
-    }
-
-    const platformSelector = document.getElementById('platformSelector');
-    const platformDropdown = document.getElementById('platformDropdown');
-    if (platformSelector && platformDropdown) {
-      platformSelector.addEventListener('click', function () {
-        loadPlatformOptions();
-        platformDropdown.classList.toggle('hidden');
-      });
-      document.addEventListener('click', function (e) {
-        if (!platformSelector.contains(e.target) && !platformDropdown.contains(e.target)) {
-          platformDropdown.classList.add('hidden');
-        }
-      });
-    }
-
-    const editPlatformSelector = document.getElementById('editPlatformSelector');
-    const editPlatformDropdown = document.getElementById('editPlatformDropdown');
-    if (editPlatformSelector && editPlatformDropdown) {
-      editPlatformSelector.addEventListener('click', function () {
-        editPlatformDropdown.classList.toggle('hidden');
-      });
-      document.addEventListener('click', function (e) {
-        if (!editPlatformSelector.contains(e.target) && !editPlatformDropdown.contains(e.target)) {
-          editPlatformDropdown.classList.add('hidden');
-        }
-      });
-      const editPlatformOptions = editPlatformDropdown.querySelectorAll('.platform-option');
-      editPlatformOptions.forEach(option => {
-        option.addEventListener('click', function () {
-          document.getElementById('editRtmpUrl').value = this.getAttribute('data-url');
-          editPlatformDropdown.classList.add('hidden');
-        });
-      });
-    }
     document.addEventListener('DOMContentLoaded', function () {
       setupAdvancedSettings('advancedSettingsToggle', 'advancedSettingsContent');
       setupAdvancedSettings('editAdvancedSettingsToggle', 'editAdvancedSettingsContent');
