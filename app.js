@@ -278,7 +278,8 @@ app.get('/register', async (req, res) => {
   }
   res.render('register', {
     title: 'Register',
-    error: null
+    error: null,
+    user: {}
   });
 });
 

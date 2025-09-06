@@ -1399,9 +1399,13 @@
           state.element.disabled = state.disabled;
         });
       }
+      const csrfToken = document.querySelector('input[name="_csrf"]')?.value;
       fetch(`/api/streams/${streamId}/status`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...(csrfToken ? { 'X-CSRF-Token': csrfToken } : {})
+        },
         body: JSON.stringify({ status: 'live' })
       })
         .then(response => response.json())
@@ -1440,9 +1444,13 @@
           state.element.disabled = state.disabled;
         });
       }
+      const csrfToken = document.querySelector('input[name="_csrf"]')?.value;
       fetch(`/api/streams/${streamId}/status`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...(csrfToken ? { 'X-CSRF-Token': csrfToken } : {})
+        },
         body: JSON.stringify({ status: 'offline' })
       })
         .then(response => response.json())
@@ -1480,9 +1488,13 @@
           state.element.disabled = state.disabled;
         });
       }
+      const csrfToken = document.querySelector('input[name="_csrf"]')?.value;
       fetch(`/api/streams/${streamId}/status`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...(csrfToken ? { 'X-CSRF-Token': csrfToken } : {})
+        },
         body: JSON.stringify({ status: 'offline' })
       })
         .then(response => response.json())
@@ -1549,9 +1561,13 @@
       let failed = 0;
 
       selectedStreams.forEach(streamId => {
+        const csrfToken = document.querySelector('input[name="_csrf"]')?.value;
         fetch(`/api/streams/${streamId}/status`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            ...(csrfToken ? { 'X-CSRF-Token': csrfToken } : {})
+          },
           body: JSON.stringify({ status: 'live' })
         })
         .then(response => response.json())
@@ -1610,9 +1626,13 @@
       let failed = 0;
 
       selectedStreams.forEach(streamId => {
+        const csrfToken = document.querySelector('input[name="_csrf"]')?.value;
         fetch(`/api/streams/${streamId}/status`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            ...(csrfToken ? { 'X-CSRF-Token': csrfToken } : {})
+          },
           body: JSON.stringify({ status: 'offline' })
         })
         .then(response => response.json())

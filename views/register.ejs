@@ -67,7 +67,7 @@
           <div class="relative">
             <input type="text" id="username" name="username"
               class="w-full pl-10 pr-4 py-2.5 bg-dark-700 border border-gray-600 rounded-lg focus:border-primary focus:ring-1 focus:ring-primary"
-              placeholder="Enter your username" value="<%= user ? user.username : '' %>" required>
+              placeholder="Enter your username" value="<%= user.username || '' %>" required>
             <i class="ti ti-user absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
           </div>
         </div>
