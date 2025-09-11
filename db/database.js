@@ -69,6 +69,11 @@ function createTables() {
     start_time TIMESTAMP,
     end_time TIMESTAMP,
     use_advanced_settings BOOLEAN DEFAULT 0,
+    is_daily_schedule BOOLEAN DEFAULT 0,
+    daily_start_time TEXT,
+    daily_end_time TEXT,
+    daily_days TEXT,
+    last_daily_run TIMESTAMP,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     user_id TEXT,
@@ -77,6 +82,9 @@ function createTables() {
   )`, (err) => {
     if (err) {
       console.error('Error creating streams table:', err.message);
+    } else {
+      // Add new columns if they don't exist (for existing databases)
+      addDailyScheduleColumns();
     }
   });
   db.run(`CREATE TABLE IF NOT EXISTS stream_history (
@@ -105,6 +113,25 @@ function createTables() {
     }
   });
 }
+function addDailyScheduleColumns() {
+  // Add daily schedule columns if they don't exist
+  const columns = [
+    { name: 'is_daily_schedule', type: 'BOOLEAN DEFAULT 0' },
+    { name: 'daily_start_time', type: 'TEXT' },
+    { name: 'daily_end_time', type: 'TEXT' },
+    { name: 'daily_days', type: 'TEXT' },
+    { name: 'last_daily_run', type: 'TIMESTAMP' }
+  ];
+
+  columns.forEach(column => {
+    db.run(`ALTER TABLE streams ADD COLUMN ${column.name} ${column.type}`, (err) => {
+      if (err && !err.message.includes('duplicate column name')) {
+        console.error(`Error adding column ${column.name}:`, err.message);
+      }
+    });
+  });
+}
+
 function checkIfUsersExist() {
   return new Promise((resolve, reject) => {
     db.get('SELECT COUNT(*) as count FROM users', [], (err, result) => {

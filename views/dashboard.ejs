@@ -301,7 +301,7 @@
                   Server time: loading...
                 </span>
               </div>
-              <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div class="space-y-4">
                 <div class="h-[42px] flex items-center justify-between">
                   <label class="text-sm text-gray-300">Loop Video</label>
                   <label class="relative inline-flex items-center cursor-pointer">
@@ -312,15 +312,130 @@
                     </div>
                   </label>
                 </div>
-                <div>
-                  <input type="datetime-local"
+                
+                <!-- Schedule Type Selection -->
+                <div class="space-y-3">
+                  <label class="text-sm text-gray-300">Schedule Type</label>
+                  <div class="flex space-x-4">
+                    <label class="flex items-center">
+                      <input type="radio" name="scheduleType" value="none" class="sr-only peer" checked>
+                      <div class="px-4 py-2 rounded-lg border border-gray-600 peer-checked:border-primary peer-checked:bg-primary/10 text-sm cursor-pointer">
+                        No Schedule
+                      </div>
+                    </label>
+                    <label class="flex items-center">
+                      <input type="radio" name="scheduleType" value="once" class="sr-only peer">
+                      <div class="px-4 py-2 rounded-lg border border-gray-600 peer-checked:border-primary peer-checked:bg-primary/10 text-sm cursor-pointer">
+                        One Time
+                      </div>
+                    </label>
+                    <label class="flex items-center">
+                      <input type="radio" name="scheduleType" value="daily" class="sr-only peer">
+                      <div class="px-4 py-2 rounded-lg border border-gray-600 peer-checked:border-primary peer-checked:bg-primary/10 text-sm cursor-pointer">
+                        Daily
+                      </div>
+                    </label>
+                  </div>
+                </div>
+
+                <!-- One Time Schedule -->
+                <div id="onceScheduleSection" class="hidden space-y-3">
+                  <label class="text-sm text-gray-300">Schedule Time</label>
+                  <input type="datetime-local" id="onceScheduleTime"
                     class="w-full h-[42px] px-4 bg-dark-700 border border-gray-600 rounded-lg focus:border-primary focus:ring-1 focus:ring-primary text-sm [color-scheme:dark]">
                 </div>
+
+                <!-- Daily Schedule -->
+                <div id="dailyScheduleSection" class="hidden space-y-3">
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label class="text-sm text-gray-300 mb-2 block">Start Time</label>
+                      <input type="time" id="dailyStartTime"
+                        class="w-full h-[42px] px-4 bg-dark-700 border border-gray-600 rounded-lg focus:border-primary focus:ring-1 focus:ring-primary text-sm [color-scheme:dark]">
+                    </div>
+                    <div>
+                      <label class="text-sm text-gray-300 mb-2 block">End Time (Optional)</label>
+                      <input type="time" id="dailyEndTime"
+                        class="w-full h-[42px] px-4 bg-dark-700 border border-gray-600 rounded-lg focus:border-primary focus:ring-1 focus:ring-primary text-sm [color-scheme:dark]">
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <div class="flex items-center justify-between mb-2">
+                      <label class="text-sm text-gray-300">Days of Week</label>
+                      <div class="flex space-x-2">
+                        <button type="button" onclick="selectAllDays()" class="text-xs text-primary hover:text-blue-400 transition-colors">
+                          Select All
+                        </button>
+                        <button type="button" onclick="selectWeekdays()" class="text-xs text-primary hover:text-blue-400 transition-colors">
+                          Weekdays
+                        </button>
+                        <button type="button" onclick="clearAllDays()" class="text-xs text-gray-400 hover:text-gray-300 transition-colors">
+                          Clear
+                        </button>
+                      </div>
+                    </div>
+                    <div class="grid grid-cols-7 gap-2">
+                      <label class="flex flex-col items-center cursor-pointer">
+                        <input type="checkbox" name="dailyDays" value="0" class="sr-only peer">
+                        <div class="w-10 h-10 rounded-lg border border-gray-600 peer-checked:border-primary peer-checked:bg-primary flex items-center justify-center text-xs peer-checked:text-white text-gray-400">
+                          S
+                        </div>
+                        <span class="text-xs text-gray-400 mt-1">Sun</span>
+                      </label>
+                      <label class="flex flex-col items-center cursor-pointer">
+                        <input type="checkbox" name="dailyDays" value="1" class="sr-only peer">
+                        <div class="w-10 h-10 rounded-lg border border-gray-600 peer-checked:border-primary peer-checked:bg-primary flex items-center justify-center text-xs peer-checked:text-white text-gray-400">
+                          M
+                        </div>
+                        <span class="text-xs text-gray-400 mt-1">Mon</span>
+                      </label>
+                      <label class="flex flex-col items-center cursor-pointer">
+                        <input type="checkbox" name="dailyDays" value="2" class="sr-only peer">
+                        <div class="w-10 h-10 rounded-lg border border-gray-600 peer-checked:border-primary peer-checked:bg-primary flex items-center justify-center text-xs peer-checked:text-white text-gray-400">
+                          T
+                        </div>
+                        <span class="text-xs text-gray-400 mt-1">Tue</span>
+                      </label>
+                      <label class="flex flex-col items-center cursor-pointer">
+                        <input type="checkbox" name="dailyDays" value="3" class="sr-only peer">
+                        <div class="w-10 h-10 rounded-lg border border-gray-600 peer-checked:border-primary peer-checked:bg-primary flex items-center justify-center text-xs peer-checked:text-white text-gray-400">
+                          W
+                        </div>
+                        <span class="text-xs text-gray-400 mt-1">Wed</span>
+                      </label>
+                      <label class="flex flex-col items-center cursor-pointer">
+                        <input type="checkbox" name="dailyDays" value="4" class="sr-only peer">
+                        <div class="w-10 h-10 rounded-lg border border-gray-600 peer-checked:border-primary peer-checked:bg-primary flex items-center justify-center text-xs peer-checked:text-white text-gray-400">
+                          T
+                        </div>
+                        <span class="text-xs text-gray-400 mt-1">Thu</span>
+                      </label>
+                      <label class="flex flex-col items-center cursor-pointer">
+                        <input type="checkbox" name="dailyDays" value="5" class="sr-only peer">
+                        <div class="w-10 h-10 rounded-lg border border-gray-600 peer-checked:border-primary peer-checked:bg-primary flex items-center justify-center text-xs peer-checked:text-white text-gray-400">
+                          F
+                        </div>
+                        <span class="text-xs text-gray-400 mt-1">Fri</span>
+                      </label>
+                      <label class="flex flex-col items-center cursor-pointer">
+                        <input type="checkbox" name="dailyDays" value="6" class="sr-only peer">
+                        <div class="w-10 h-10 rounded-lg border border-gray-600 peer-checked:border-primary peer-checked:bg-primary flex items-center justify-center text-xs peer-checked:text-white text-gray-400">
+                          S
+                        </div>
+                        <span class="text-xs text-gray-400 mt-1">Sat</span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Duration -->
                 <div class="relative">
-                  <input type="number" min="1"
+                  <label class="text-sm text-gray-300 mb-2 block">Duration (minutes)</label>
+                  <input type="number" id="streamDuration" min="1"
                     class="w-full h-[42px] px-4 pr-16 bg-dark-700 border border-gray-600 rounded-lg focus:border-primary focus:ring-1 focus:ring-primary text-sm"
                     placeholder="Duration">
-                  <span class="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-gray-400">minutes</span>
+                  <span class="absolute right-4 top-8 -translate-y-1/2 text-sm text-gray-400">minutes</span>
                 </div>
               </div>
             </div>
@@ -522,7 +637,8 @@
                 </div>
               </div>
             </div>
-            <div class="space-y-2">
+            <!-- Schedule Settings -->
+            <div class="space-y-4">
               <div class="flex flex-col sm:flex-row sm:items-center">
                 <label class="text-sm font-medium text-white">Schedule Settings</label>
                 <span id="editServerTimeDisplay"
@@ -530,27 +646,156 @@
                   Server time: loading...
                 </span>
               </div>
-              <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div class="h-[42px] flex items-center justify-between">
-                  <label class="text-sm text-gray-300">Loop Video</label>
-                  <label class="relative inline-flex items-center cursor-pointer">
-                    <input type="checkbox" name="loopVideo" id="editLoopVideo" class="sr-only peer" checked>
-                    <div class="w-11 h-6 bg-dark-700 rounded-full peer peer-checked:bg-primary"></div>
-                    <div
-                      class="absolute left-[2px] top-[2px] w-5 h-5 bg-white rounded-full transition-all peer-checked:translate-x-5">
+              
+              <!-- Schedule Type Selection -->
+              <div class="space-y-3">
+                <label class="text-sm text-gray-300">Schedule Type</label>
+                <div class="flex space-x-4">
+                  <label class="flex items-center">
+                    <input type="radio" name="editScheduleType" value="none" class="sr-only peer" checked>
+                    <div class="w-4 h-4 rounded-full border-2 border-gray-600 peer-checked:border-primary peer-checked:bg-primary flex items-center justify-center">
+                      <div class="w-2 h-2 rounded-full bg-white opacity-0 peer-checked:opacity-100"></div>
                     </div>
+                    <span class="ml-2 text-sm text-gray-300">No Schedule</span>
+                  </label>
+                  <label class="flex items-center">
+                    <input type="radio" name="editScheduleType" value="once" class="sr-only peer">
+                    <div class="w-4 h-4 rounded-full border-2 border-gray-600 peer-checked:border-primary peer-checked:bg-primary flex items-center justify-center">
+                      <div class="w-2 h-2 rounded-full bg-white opacity-0 peer-checked:opacity-100"></div>
+                    </div>
+                    <span class="ml-2 text-sm text-gray-300">One Time</span>
+                  </label>
+                  <label class="flex items-center">
+                    <input type="radio" name="editScheduleType" value="daily" class="sr-only peer">
+                    <div class="w-4 h-4 rounded-full border-2 border-gray-600 peer-checked:border-primary peer-checked:bg-primary flex items-center justify-center">
+                      <div class="w-2 h-2 rounded-full bg-white opacity-0 peer-checked:opacity-100"></div>
+                    </div>
+                    <span class="ml-2 text-sm text-gray-300">Daily</span>
                   </label>
                 </div>
-                <div>
-                  <input type="datetime-local" id="editScheduleTime"
-                    class="w-full h-[42px] px-4 bg-dark-700 border border-gray-600 rounded-lg focus:border-primary focus:ring-1 focus:ring-primary text-sm [color-scheme:dark]">
+              </div>
+
+              <!-- One-time Schedule Section -->
+              <div id="editOnceScheduleSection" class="hidden space-y-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label class="text-sm text-gray-300 mb-2 block">Schedule Time</label>
+                    <input type="datetime-local" id="editOnceScheduleTime"
+                      class="w-full h-[42px] px-4 bg-dark-700 border border-gray-600 rounded-lg focus:border-primary focus:ring-1 focus:ring-primary text-sm [color-scheme:dark]">
+                  </div>
+                  <div class="relative">
+                    <label class="text-sm text-gray-300 mb-2 block">Duration (minutes)</label>
+                    <input type="number" id="editOnceDuration" min="1"
+                      class="w-full h-[42px] px-4 pr-16 bg-dark-700 border border-gray-600 rounded-lg focus:border-primary focus:ring-1 focus:ring-primary text-sm"
+                      placeholder="Duration">
+                    <span class="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-gray-400">minutes</span>
+                  </div>
                 </div>
+              </div>
+
+              <!-- Daily Schedule Section -->
+              <div id="editDailyScheduleSection" class="hidden space-y-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label class="text-sm text-gray-300 mb-2 block">Start Time</label>
+                    <input type="time" id="editDailyStartTime"
+                      class="w-full h-[42px] px-4 bg-dark-700 border border-gray-600 rounded-lg focus:border-primary focus:ring-1 focus:ring-primary text-sm [color-scheme:dark]">
+                  </div>
+                  <div>
+                    <label class="text-sm text-gray-300 mb-2 block">End Time</label>
+                    <input type="time" id="editDailyEndTime"
+                      class="w-full h-[42px] px-4 bg-dark-700 border border-gray-600 rounded-lg focus:border-primary focus:ring-1 focus:ring-primary text-sm [color-scheme:dark]">
+                  </div>
+                </div>
+                
+                <div>
+                  <div class="flex items-center justify-between mb-2">
+                    <label class="text-sm text-gray-300">Days of Week</label>
+                    <div class="flex space-x-2">
+                      <button type="button" onclick="editSelectAllDays()" class="text-xs text-primary hover:text-blue-400 transition-colors">
+                        Select All
+                      </button>
+                      <button type="button" onclick="editSelectWeekdays()" class="text-xs text-primary hover:text-blue-400 transition-colors">
+                        Weekdays
+                      </button>
+                      <button type="button" onclick="editClearAllDays()" class="text-xs text-gray-400 hover:text-gray-300 transition-colors">
+                        Clear
+                      </button>
+                    </div>
+                  </div>
+                  <div class="grid grid-cols-7 gap-2">
+                    <label class="flex flex-col items-center cursor-pointer">
+                      <input type="checkbox" name="editDailyDays" value="0" class="sr-only peer">
+                      <div class="w-10 h-10 rounded-lg border border-gray-600 peer-checked:border-primary peer-checked:bg-primary flex items-center justify-center text-xs peer-checked:text-white text-gray-400">
+                        S
+                      </div>
+                      <span class="text-xs text-gray-400 mt-1">Sun</span>
+                    </label>
+                    <label class="flex flex-col items-center cursor-pointer">
+                      <input type="checkbox" name="editDailyDays" value="1" class="sr-only peer">
+                      <div class="w-10 h-10 rounded-lg border border-gray-600 peer-checked:border-primary peer-checked:bg-primary flex items-center justify-center text-xs peer-checked:text-white text-gray-400">
+                        M
+                      </div>
+                      <span class="text-xs text-gray-400 mt-1">Mon</span>
+                    </label>
+                    <label class="flex flex-col items-center cursor-pointer">
+                      <input type="checkbox" name="editDailyDays" value="2" class="sr-only peer">
+                      <div class="w-10 h-10 rounded-lg border border-gray-600 peer-checked:border-primary peer-checked:bg-primary flex items-center justify-center text-xs peer-checked:text-white text-gray-400">
+                        T
+                      </div>
+                      <span class="text-xs text-gray-400 mt-1">Tue</span>
+                    </label>
+                    <label class="flex flex-col items-center cursor-pointer">
+                      <input type="checkbox" name="editDailyDays" value="3" class="sr-only peer">
+                      <div class="w-10 h-10 rounded-lg border border-gray-600 peer-checked:border-primary peer-checked:bg-primary flex items-center justify-center text-xs peer-checked:text-white text-gray-400">
+                        W
+                      </div>
+                      <span class="text-xs text-gray-400 mt-1">Wed</span>
+                    </label>
+                    <label class="flex flex-col items-center cursor-pointer">
+                      <input type="checkbox" name="editDailyDays" value="4" class="sr-only peer">
+                      <div class="w-10 h-10 rounded-lg border border-gray-600 peer-checked:border-primary peer-checked:bg-primary flex items-center justify-center text-xs peer-checked:text-white text-gray-400">
+                        T
+                      </div>
+                      <span class="text-xs text-gray-400 mt-1">Thu</span>
+                    </label>
+                    <label class="flex flex-col items-center cursor-pointer">
+                      <input type="checkbox" name="editDailyDays" value="5" class="sr-only peer">
+                      <div class="w-10 h-10 rounded-lg border border-gray-600 peer-checked:border-primary peer-checked:bg-primary flex items-center justify-center text-xs peer-checked:text-white text-gray-400">
+                        F
+                      </div>
+                      <span class="text-xs text-gray-400 mt-1">Fri</span>
+                    </label>
+                    <label class="flex flex-col items-center cursor-pointer">
+                      <input type="checkbox" name="editDailyDays" value="6" class="sr-only peer">
+                      <div class="w-10 h-10 rounded-lg border border-gray-600 peer-checked:border-primary peer-checked:bg-primary flex items-center justify-center text-xs peer-checked:text-white text-gray-400">
+                        S
+                      </div>
+                      <span class="text-xs text-gray-400 mt-1">Sat</span>
+                    </label>
+                  </div>
+                </div>
+
+                <!-- Duration -->
                 <div class="relative">
-                  <input type="number" id="editDuration" min="1"
+                  <label class="text-sm text-gray-300 mb-2 block">Duration (minutes)</label>
+                  <input type="number" id="editDailyDuration" min="1"
                     class="w-full h-[42px] px-4 pr-16 bg-dark-700 border border-gray-600 rounded-lg focus:border-primary focus:ring-1 focus:ring-primary text-sm"
                     placeholder="Duration">
                   <span class="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-gray-400">minutes</span>
                 </div>
+              </div>
+
+              <!-- Loop Video -->
+              <div class="h-[42px] flex items-center justify-between">
+                <label class="text-sm text-gray-300">Loop Video</label>
+                <label class="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" name="loopVideo" id="editLoopVideo" class="sr-only peer" checked>
+                  <div class="w-11 h-6 bg-dark-700 rounded-full peer peer-checked:bg-primary"></div>
+                  <div
+                    class="absolute left-[2px] top-[2px] w-5 h-5 bg-white rounded-full transition-all peer-checked:translate-x-5">
+                  </div>
+                </label>
               </div>
             </div>
             <div class="space-y-4">
@@ -978,13 +1223,33 @@
         resolution: document.getElementById('currentResolution').textContent.split(' ')[0],
         useAdvancedSettings: !document.getElementById('advancedSettingsContent').classList.contains('hidden')
       };
-      const scheduleTime = document.querySelector('input[type="datetime-local"]').value;
-      const duration = document.querySelector('input[type="number"]').value;
-      if (scheduleTime) {
-        formData.scheduleTime = scheduleTime;
+
+      // Handle scheduling
+      const scheduleType = document.querySelector('input[name="scheduleType"]:checked').value;
+      
+      if (scheduleType === 'once') {
+        const scheduleTime = document.getElementById('onceScheduleTime').value;
+        if (scheduleTime) {
+          formData.scheduleTime = scheduleTime;
+        }
+      } else if (scheduleType === 'daily') {
+        const dailyStartTime = document.getElementById('dailyStartTime').value;
+        const dailyEndTime = document.getElementById('dailyEndTime').value;
+        const selectedDays = Array.from(document.querySelectorAll('input[name="dailyDays"]:checked'))
+          .map(checkbox => checkbox.value);
+        
+        if (dailyStartTime && selectedDays.length > 0) {
+          formData.is_daily_schedule = true;
+          formData.daily_start_time = dailyStartTime;
+          formData.daily_end_time = dailyEndTime || null;
+          formData.daily_days = selectedDays.join(',');
+        }
       }
+
+      // Handle duration
+      const duration = document.getElementById('streamDuration').value;
       if (duration) {
-        formData.duration = duration;
+        formData.duration = parseInt(duration);
       }
       const csrfToken = document.querySelector('input[name="_csrf"]')?.value;
       fetch('/api/streams', {
@@ -1081,8 +1346,18 @@
         }
         const statusBadge = getStatusBadgeHTML(stream.status);
         const startDate = stream.start_time ? formatDate(new Date(stream.start_time)) : '';
-        const scheduleDate = stream.schedule_time ? formatDate(new Date(stream.schedule_time)) : '';
-        const scheduleTime = stream.schedule_time ? formatTime(new Date(stream.schedule_time)) : '';
+        let scheduleDate = '';
+        let scheduleTime = '';
+        
+        if (stream.schedule_time) {
+          // One-time schedule
+          scheduleDate = formatDate(new Date(stream.schedule_time));
+          scheduleTime = formatTime(new Date(stream.schedule_time));
+        } else if (stream.is_daily_schedule && stream.daily_start_time && stream.daily_days) {
+          // Daily schedule
+          scheduleDate = 'Daily';
+          scheduleTime = stream.daily_start_time;
+        }
         let settingsDisplay = '';
         if (stream.use_advanced_settings) {
           settingsDisplay = `${stream.resolution || '1280x720'} • ${stream.bitrate || '2500'} kbps • ${stream.fps || '30'} FPS`;
@@ -1131,10 +1406,10 @@
             <i class="ti ti-clock mr-1.5"></i>
             <span>Duration: ${formattedDuration}</span>
           </div>
-          ${stream.status === 'scheduled' ? `
-          <div class="flex items-center text-sm text-yellow-500 mb-3">
+          ${stream.status === 'scheduled' || stream.status === 'daily_scheduled' ? `
+          <div class="flex items-center text-sm ${stream.status === 'daily_scheduled' ? 'text-blue-500' : 'text-yellow-500'} mb-3">
             <i class="ti ti-calendar-event mr-1.5"></i>
-            <span>Starts ${scheduleDate} • ${scheduleTime}</span>
+            <span>${stream.status === 'daily_scheduled' ? 'Daily' : 'Starts'} ${scheduleDate} • ${scheduleTime}</span>
           </div>` : `
           <div class="flex items-center text-sm text-gray-400 mb-3">
             <i class="ti ti-calendar mr-1.5"></i>
@@ -1163,7 +1438,16 @@
           stream.video_thumbnail :
           'https://via.placeholder.com/320x180?text=No+Preview';
         const startDate = stream.start_time ? new Date(stream.start_time) : null;
-        const scheduleDate = stream.schedule_time ? new Date(stream.schedule_time) : null;
+        let scheduleDate = null;
+        let scheduleTime = '';
+        
+        if (stream.schedule_time) {
+          // One-time schedule
+          scheduleDate = new Date(stream.schedule_time);
+        } else if (stream.is_daily_schedule && stream.daily_start_time && stream.daily_days) {
+          // Daily schedule - show just the time
+          scheduleTime = stream.daily_start_time;
+        }
         let settingsDisplay = '';
         if (stream.use_advanced_settings) {
           settingsDisplay = `${stream.resolution || '1280x720'} • ${stream.bitrate || '2500'} kbps • ${stream.fps || '30'} FPS`;
@@ -1232,6 +1516,8 @@
           ${scheduleDate
             ? `<div class="text-sm text-yellow-500 font-medium">${formatDate(scheduleDate)}</div>
                <div class="text-xs text-gray-400">${formatTime(scheduleDate)}</div>`
+            : scheduleTime
+            ? `<div class="text-sm text-blue-500 font-medium">${scheduleTime}</div>`
             : `<div class="text-sm">--</div>`}
         </td>
         <td class="px-6 py-4 whitespace-nowrap">
@@ -1339,6 +1625,13 @@
               <span class="text-xs font-medium">Scheduled</span>
             </span>
           `;
+          case 'daily_scheduled':
+            return `
+            <span class="flex items-center bg-blue-500/10 text-blue-500 rounded-full px-2.5 py-1">
+              <i class="ti ti-calendar-repeat text-xs mr-1.5"></i>
+              <span class="text-xs font-medium">Daily</span>
+            </span>
+          `;
           case 'offline':
           default:
             return `
@@ -1367,6 +1660,14 @@
             <button
               onclick="cancelSchedule('${streamId}')"
               class="${btnClass} bg-yellow-500 hover:bg-yellow-600">
+              Cancel
+            </button>
+          `;
+          case 'daily_scheduled':
+            return `
+            <button
+              onclick="cancelDailySchedule('${streamId}')"
+              class="${btnClass} bg-blue-500 hover:bg-blue-600">
               Cancel
             </button>
           `;
@@ -1471,6 +1772,35 @@
           restoreButtons();
         });
     }
+    function cancelDailySchedule(streamId) {
+      if (!streamId) return;
+      if (!confirm('Are you sure you want to cancel this daily schedule?')) {
+        return;
+      }
+      const csrfToken = document.querySelector('input[name="_csrf"]')?.value;
+      fetch(`/api/streams/${streamId}/status`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(csrfToken ? { 'X-CSRF-Token': csrfToken } : {})
+        },
+        body: JSON.stringify({ status: 'offline' })
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            alert('Daily schedule cancelled successfully!');
+            window.location.reload();
+          } else {
+            alert(`Error: ${data.error || 'Failed to cancel daily schedule'}`);
+          }
+        })
+        .catch(error => {
+          console.error('Error cancelling daily schedule:', error);
+          alert(`An error occurred while cancelling the daily schedule: ${error.message}`);
+        });
+    }
+
     function cancelSchedule(streamId) {
       if (!streamId) return;
       const actionBtns = document.querySelectorAll(`[data-stream-id="${streamId}"] .action-btn`);
@@ -1830,17 +2160,40 @@
           break;
         }
       }
-      if (stream.schedule_time) {
+      // Handle schedule type and data
+      if (stream.is_daily_schedule && stream.daily_start_time && stream.daily_days) {
+        // Daily schedule
+        document.querySelector('input[name="editScheduleType"][value="daily"]').checked = true;
+        document.getElementById('editDailyStartTime').value = stream.daily_start_time;
+        document.getElementById('editDailyEndTime').value = stream.daily_end_time || '';
+        document.getElementById('editDailyDuration').value = stream.duration || '';
+        
+        // Set selected days
+        const selectedDays = stream.daily_days.split(',').map(d => parseInt(d));
+        const dayCheckboxes = document.querySelectorAll('input[name="editDailyDays"]');
+        dayCheckboxes.forEach(checkbox => {
+          checkbox.checked = selectedDays.includes(parseInt(checkbox.value));
+        });
+        
+        // Show daily schedule section
+        document.getElementById('editDailyScheduleSection').classList.remove('hidden');
+        document.getElementById('editOnceScheduleSection').classList.add('hidden');
+      } else if (stream.schedule_time) {
+        // One-time schedule
+        document.querySelector('input[name="editScheduleType"][value="once"]').checked = true;
         const scheduleDate = new Date(stream.schedule_time);
         const formattedDate = scheduleDate.toISOString().slice(0, 16);
-        document.getElementById('editScheduleTime').value = formattedDate;
+        document.getElementById('editOnceScheduleTime').value = formattedDate;
+        document.getElementById('editOnceDuration').value = stream.duration || '';
+        
+        // Show one-time schedule section
+        document.getElementById('editOnceScheduleSection').classList.remove('hidden');
+        document.getElementById('editDailyScheduleSection').classList.add('hidden');
       } else {
-        document.getElementById('editScheduleTime').value = '';
-      }
-      if (stream.duration) {
-        document.getElementById('editDuration').value = stream.duration;
-      } else {
-        document.getElementById('editDuration').value = '';
+        // No schedule
+        document.querySelector('input[name="editScheduleType"][value="none"]').checked = true;
+        document.getElementById('editOnceScheduleSection').classList.add('hidden');
+        document.getElementById('editDailyScheduleSection').classList.add('hidden');
       }
       const advancedSettingsContent = document.getElementById('editAdvancedSettingsContent');
       const advancedSettingsToggle = document.getElementById('editAdvancedSettingsToggle');
@@ -2092,13 +2445,34 @@
             resolution: document.getElementById('editCurrentResolution').textContent,
             useAdvancedSettings: !document.getElementById('editAdvancedSettingsContent').classList.contains('hidden')
           };
-          const scheduleTime = document.getElementById('editScheduleTime').value;
-          const duration = document.getElementById('editDuration').value;
-          if (scheduleTime) {
-            formData.scheduleTime = scheduleTime;
-          }
-          if (duration) {
-            formData.duration = parseInt(duration);
+          // Handle scheduling
+          const scheduleType = document.querySelector('input[name="editScheduleType"]:checked').value;
+          
+          if (scheduleType === 'once') {
+            const scheduleTime = document.getElementById('editOnceScheduleTime').value;
+            const duration = document.getElementById('editOnceDuration').value;
+            if (scheduleTime) {
+              formData.scheduleTime = scheduleTime;
+            }
+            if (duration) {
+              formData.duration = parseInt(duration);
+            }
+          } else if (scheduleType === 'daily') {
+            const dailyStartTime = document.getElementById('editDailyStartTime').value;
+            const dailyEndTime = document.getElementById('editDailyEndTime').value;
+            const selectedDays = Array.from(document.querySelectorAll('input[name="editDailyDays"]:checked'))
+              .map(checkbox => checkbox.value);
+            const duration = document.getElementById('editDailyDuration').value;
+            
+            if (dailyStartTime && selectedDays.length > 0) {
+              formData.is_daily_schedule = true;
+              formData.daily_start_time = dailyStartTime;
+              formData.daily_end_time = dailyEndTime || null;
+              formData.daily_days = selectedDays.join(',');
+            }
+            if (duration) {
+              formData.duration = parseInt(duration);
+            }
           }
           const csrfToken = document.querySelector('input[name="_csrf"]')?.value;
           fetch(`/api/streams/${streamId}`, {

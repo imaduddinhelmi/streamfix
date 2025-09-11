@@ -19,9 +19,11 @@ async function checkScheduledStreams() {
     const now = new Date();
     const lookAheadTime = new Date(now.getTime() + SCHEDULE_LOOKAHEAD_SECONDS * 1000);
     console.log(`Checking for scheduled streams (${now.toISOString()} to ${lookAheadTime.toISOString()})`);
+    
+    // Check one-time scheduled streams
     const streams = await Stream.findScheduledInRange(now, lookAheadTime);
     if (streams.length > 0) {
-      console.log(`Found ${streams.length} streams to schedule start`);
+      console.log(`Found ${streams.length} one-time scheduled streams to start`);
       for (const stream of streams) {
         console.log(`Starting scheduled stream: ${stream.id} - ${stream.title}`);
         const result = await streamingService.startStream(stream.id);
@@ -35,8 +37,85 @@ async function checkScheduledStreams() {
         }
       }
     }
+
+    // Check daily scheduled streams
+    await checkDailyScheduledStreams();
   } catch (error) {
     console.error('Error checking scheduled streams:', error);
+  }
+}
+
+async function checkDailyScheduledStreams() {
+  try {
+    const now = new Date();
+    const currentDay = now.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+    const currentTime = now.toTimeString().substring(0, 5); // HH:MM format
+    
+    console.log(`Checking daily scheduled streams (Day: ${currentDay}, Time: ${currentTime})`);
+    
+    const dailyStreams = await Stream.findDailyScheduledStreams();
+    
+    for (const stream of dailyStreams) {
+      try {
+        // Parse the days string (e.g., "1,2,3,4,5" for weekdays)
+        const scheduledDays = stream.daily_days.split(',').map(day => parseInt(day.trim()));
+        
+        // Check if today is a scheduled day
+        if (!scheduledDays.includes(currentDay)) {
+          continue;
+        }
+        
+        // Check if it's time to start the stream
+        if (currentTime < stream.daily_start_time) {
+          continue;
+        }
+        
+        // Check if we already ran this stream today
+        if (stream.last_daily_run) {
+          const lastRun = new Date(stream.last_daily_run);
+          const today = new Date();
+          if (lastRun.toDateString() === today.toDateString()) {
+            console.log(`Daily stream ${stream.id} already ran today, skipping`);
+            continue;
+          }
+        }
+        
+        console.log(`Starting daily scheduled stream: ${stream.id} - ${stream.title}`);
+        const result = await streamingService.startStream(stream.id);
+        
+        if (result.success) {
+          console.log(`Successfully started daily stream: ${stream.id}`);
+          
+          // Update last daily run timestamp
+          await Stream.updateLastDailyRun(stream.id);
+          
+          // Schedule termination if there's an end time
+          if (stream.daily_end_time) {
+            const startTime = new Date();
+            const [endHour, endMinute] = stream.daily_end_time.split(':').map(Number);
+            const endTime = new Date();
+            endTime.setHours(endHour, endMinute, 0, 0);
+            
+            // If end time is tomorrow, add 24 hours
+            if (endTime <= startTime) {
+              endTime.setDate(endTime.getDate() + 1);
+            }
+            
+            const durationMinutes = (endTime - startTime) / (1000 * 60);
+            scheduleStreamTermination(stream.id, durationMinutes);
+            console.log(`Scheduled daily stream ${stream.id} to end at ${stream.daily_end_time}`);
+          } else if (stream.duration) {
+            scheduleStreamTermination(stream.id, stream.duration);
+          }
+        } else {
+          console.error(`Failed to start daily stream ${stream.id}: ${result.error}`);
+        }
+      } catch (error) {
+        console.error(`Error processing daily stream ${stream.id}:`, error);
+      }
+    }
+  } catch (error) {
+    console.error('Error checking daily scheduled streams:', error);
   }
 }
 async function checkStreamDurations() {

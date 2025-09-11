@@ -299,7 +299,102 @@ document.addEventListener('DOMContentLoaded', () => {
     resolutionSelect.addEventListener('change', updateResolutionDisplay);
     setVideoOrientation('horizontal');
   }
+
+  // Handle schedule type switching
+  const scheduleTypeRadios = document.querySelectorAll('input[name="scheduleType"]');
+  const onceScheduleSection = document.getElementById('onceScheduleSection');
+  const dailyScheduleSection = document.getElementById('dailyScheduleSection');
+
+  scheduleTypeRadios.forEach(radio => {
+    radio.addEventListener('change', function() {
+      // Hide all sections first
+      if (onceScheduleSection) onceScheduleSection.classList.add('hidden');
+      if (dailyScheduleSection) dailyScheduleSection.classList.add('hidden');
+
+      // Show the selected section
+      if (this.value === 'once' && onceScheduleSection) {
+        onceScheduleSection.classList.remove('hidden');
+      } else if (this.value === 'daily' && dailyScheduleSection) {
+        dailyScheduleSection.classList.remove('hidden');
+      }
+    });
+  });
+
+  // Handle edit modal schedule type switching
+  const editScheduleTypeRadios = document.querySelectorAll('input[name="editScheduleType"]');
+  const editOnceScheduleSection = document.getElementById('editOnceScheduleSection');
+  const editDailyScheduleSection = document.getElementById('editDailyScheduleSection');
+
+  editScheduleTypeRadios.forEach(radio => {
+    radio.addEventListener('change', function() {
+      // Hide all sections first
+      if (editOnceScheduleSection) editOnceScheduleSection.classList.add('hidden');
+      if (editDailyScheduleSection) editDailyScheduleSection.classList.add('hidden');
+
+      // Show the selected section
+      if (this.value === 'once' && editOnceScheduleSection) {
+        editOnceScheduleSection.classList.remove('hidden');
+      } else if (this.value === 'daily' && editDailyScheduleSection) {
+        editDailyScheduleSection.classList.remove('hidden');
+      }
+    });
+  });
 });
+
+// Day selection functions
+function selectAllDays() {
+  const checkboxes = document.querySelectorAll('input[name="dailyDays"]');
+  checkboxes.forEach(checkbox => {
+    checkbox.checked = true;
+    // Trigger the peer-checked styling
+    checkbox.dispatchEvent(new Event('change'));
+  });
+}
+
+function selectWeekdays() {
+  const checkboxes = document.querySelectorAll('input[name="dailyDays"]');
+  checkboxes.forEach(checkbox => {
+    // Weekdays are Monday (1) to Friday (5)
+    const value = parseInt(checkbox.value);
+    checkbox.checked = (value >= 1 && value <= 5);
+    checkbox.dispatchEvent(new Event('change'));
+  });
+}
+
+function clearAllDays() {
+  const checkboxes = document.querySelectorAll('input[name="dailyDays"]');
+  checkboxes.forEach(checkbox => {
+    checkbox.checked = false;
+    checkbox.dispatchEvent(new Event('change'));
+  });
+}
+
+// Edit modal day selection functions
+function editSelectAllDays() {
+  const checkboxes = document.querySelectorAll('input[name="editDailyDays"]');
+  checkboxes.forEach(checkbox => {
+    checkbox.checked = true;
+    checkbox.dispatchEvent(new Event('change'));
+  });
+}
+
+function editSelectWeekdays() {
+  const checkboxes = document.querySelectorAll('input[name="editDailyDays"]');
+  checkboxes.forEach(checkbox => {
+    // Weekdays are Monday (1) to Friday (5)
+    const value = parseInt(checkbox.value);
+    checkbox.checked = (value >= 1 && value <= 5);
+    checkbox.dispatchEvent(new Event('change'));
+  });
+}
+
+function editClearAllDays() {
+  const checkboxes = document.querySelectorAll('input[name="editDailyDays"]');
+  checkboxes.forEach(checkbox => {
+    checkbox.checked = false;
+    checkbox.dispatchEvent(new Event('change'));
+  });
+}
 function toggleStreamKeyVisibility() {
   const streamKeyInput = document.getElementById('streamKey');
   const streamKeyToggle = document.getElementById('streamKeyToggle');

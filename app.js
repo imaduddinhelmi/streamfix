@@ -36,6 +36,31 @@ process.on('uncaughtException', (error) => {
   console.error('UNCAUGHT EXCEPTION:', error);
   console.error('-----------------------------------');
 });
+
+// Graceful shutdown handler
+process.on('SIGTERM', async () => {
+  console.log('SIGTERM received, stopping all streams...');
+  try {
+    await streamingService.stopAllStreams();
+    console.log('All streams stopped, exiting...');
+    process.exit(0);
+  } catch (error) {
+    console.error('Error stopping streams during shutdown:', error);
+    process.exit(1);
+  }
+});
+
+process.on('SIGINT', async () => {
+  console.log('SIGINT received, stopping all streams...');
+  try {
+    await streamingService.stopAllStreams();
+    console.log('All streams stopped, exiting...');
+    process.exit(0);
+  } catch (error) {
+    console.error('Error stopping streams during shutdown:', error);
+    process.exit(1);
+  }
+});
 const app = express();
 app.set("trust proxy", 1);
 const port = process.env.PORT || 7575;
@@ -1343,10 +1368,27 @@ app.post('/api/streams', isAuthenticated, [
       
       streamData.schedule_time = scheduleDate.toISOString();
     }
+    
+    // Handle daily scheduling
+    if (req.body.is_daily_schedule) {
+      streamData.is_daily_schedule = true;
+      streamData.daily_start_time = req.body.daily_start_time;
+      streamData.daily_end_time = req.body.daily_end_time;
+      streamData.daily_days = req.body.daily_days;
+    }
+    
     if (req.body.duration) {
       streamData.duration = parseInt(req.body.duration);
     }
-    streamData.status = req.body.scheduleTime ? 'scheduled' : 'offline';
+    
+    // Set status based on scheduling type
+    if (req.body.scheduleTime) {
+      streamData.status = 'scheduled';
+    } else if (req.body.is_daily_schedule) {
+      streamData.status = 'daily_scheduled';
+    } else {
+      streamData.status = 'offline';
+    }
     const stream = await Stream.create(streamData);
     res.json({ success: true, stream });
   } catch (error) {
@@ -1404,9 +1446,33 @@ app.put('/api/streams/:id', isAuthenticated, async (req, res) => {
       
       updateData.schedule_time = scheduleDate.toISOString();
       updateData.status = 'scheduled';
+      // Clear daily schedule when setting one-time schedule
+      updateData.is_daily_schedule = false;
+      updateData.daily_start_time = null;
+      updateData.daily_end_time = null;
+      updateData.daily_days = null;
     } else if ('scheduleTime' in req.body && !req.body.scheduleTime) {
       updateData.schedule_time = null;
       updateData.status = 'offline';
+    }
+    
+    // Handle daily scheduling updates
+    if (req.body.is_daily_schedule) {
+      updateData.is_daily_schedule = true;
+      updateData.daily_start_time = req.body.daily_start_time;
+      updateData.daily_end_time = req.body.daily_end_time;
+      updateData.daily_days = req.body.daily_days;
+      updateData.status = 'daily_scheduled';
+      // Clear one-time schedule when setting daily schedule
+      updateData.schedule_time = null;
+    } else if ('is_daily_schedule' in req.body && !req.body.is_daily_schedule) {
+      updateData.is_daily_schedule = false;
+      updateData.daily_start_time = null;
+      updateData.daily_end_time = null;
+      updateData.daily_days = null;
+      if (!updateData.schedule_time) {
+        updateData.status = 'offline';
+      }
     }
     
     const updatedStream = await Stream.update(req.params.id, updateData);
@@ -1494,6 +1560,15 @@ app.post('/api/streams/:id/status', isAuthenticated, [
           status: 'offline'
         });
         console.log(`Scheduled stream ${streamId} was cancelled`);
+      } else if (stream.status === 'daily_scheduled') {
+        await Stream.update(streamId, {
+          is_daily_schedule: false,
+          daily_start_time: null,
+          daily_end_time: null,
+          daily_days: null,
+          status: 'offline'
+        });
+        console.log(`Daily scheduled stream ${streamId} was cancelled`);
       }
       const result = await Stream.updateStatus(streamId, 'offline', req.session.userId);
       if (!result.updated) {
@@ -1539,6 +1614,19 @@ app.get('/api/streams/check-key', isAuthenticated, async (req, res) => {
     res.status(500).json({
       success: false,
       error: 'Failed to check stream key'
+    });
+  }
+});
+
+app.post('/api/streams/stop-all', isAuthenticated, async (req, res) => {
+  try {
+    const result = await streamingService.stopAllStreams();
+    res.json(result);
+  } catch (error) {
+    console.error('Error stopping all streams:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to stop all streams'
     });
   }
 });

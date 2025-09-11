@@ -253,6 +253,7 @@ async function stopStream(streamId) {
     const ffmpegProcess = activeStreams.get(streamId);
     const isActive = ffmpegProcess !== undefined;
     console.log(`[StreamingService] Stop request for stream ${streamId}, isActive: ${isActive}`);
+    
     if (!isActive) {
       const stream = await Stream.findById(streamId);
       if (stream && stream.status === 'live') {
@@ -265,28 +266,59 @@ async function stopStream(streamId) {
       }
       return { success: false, error: 'Stream is not active' };
     }
+
     addStreamLog(streamId, 'Stopping stream...');
     console.log(`[StreamingService] Stopping active stream ${streamId}`);
     manuallyStoppingStreams.add(streamId);
+
+    // Try to kill the process gracefully first
+    let killSuccess = false;
     try {
       ffmpegProcess.kill('SIGTERM');
+      killSuccess = true;
+      console.log(`[StreamingService] Sent SIGTERM to stream ${streamId}`);
     } catch (killError) {
-      console.error(`[StreamingService] Error killing FFmpeg process: ${killError.message}`);
-      manuallyStoppingStreams.delete(streamId);
+      console.error(`[StreamingService] Error sending SIGTERM to FFmpeg process: ${killError.message}`);
     }
-    const stream = await Stream.findById(streamId);
+
+    // Wait a bit for graceful shutdown, then force kill if needed
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    
+    // Check if process is still alive and force kill if necessary
+    if (killSuccess && !ffmpegProcess.killed) {
+      try {
+        ffmpegProcess.kill('SIGKILL');
+        console.log(`[StreamingService] Sent SIGKILL to stream ${streamId} after graceful shutdown timeout`);
+      } catch (forceKillError) {
+        console.error(`[StreamingService] Error force killing FFmpeg process: ${forceKillError.message}`);
+      }
+    }
+
+    // Remove from active streams map
     activeStreams.delete(streamId);
+    
+    // Update database status
+    const stream = await Stream.findById(streamId);
     if (stream) {
       await Stream.updateStatus(streamId, 'offline', stream.user_id);
       const updatedStream = await Stream.findById(streamId);
       await saveStreamHistory(updatedStream);
     }
+    
+    // Cancel any scheduled termination
     if (typeof schedulerService !== 'undefined' && schedulerService.cancelStreamTermination) {
       schedulerService.handleStreamStopped(streamId);
     }
+    
+    // Clean up manual stop tracking
+    manuallyStoppingStreams.delete(streamId);
+    
+    console.log(`[StreamingService] Successfully stopped stream ${streamId}`);
     return { success: true, message: 'Stream stopped successfully' };
   } catch (error) {
+    // Clean up on error
     manuallyStoppingStreams.delete(streamId);
+    activeStreams.delete(streamId);
     console.error(`[StreamingService] Error stopping stream ${streamId}:`, error);
     return { success: false, error: error.message };
   }
@@ -317,6 +349,17 @@ async function syncStreamStatuses() {
           if (process) {
             try {
               process.kill('SIGTERM');
+              // Wait a bit and force kill if needed
+              setTimeout(() => {
+                if (!process.killed) {
+                  try {
+                    process.kill('SIGKILL');
+                    console.log(`[StreamingService] Force killed orphaned process ${streamId}`);
+                  } catch (error) {
+                    console.error(`[StreamingService] Error force killing orphaned process: ${error.message}`);
+                  }
+                }
+              }, 3000);
             } catch (error) {
               console.error(`[StreamingService] Error killing orphaned process: ${error.message}`);
             }
@@ -399,9 +442,41 @@ async function saveStreamHistory(stream) {
     return false;
   }
 }
+async function stopAllStreams() {
+  try {
+    console.log(`[StreamingService] Stopping all active streams (${activeStreams.size} streams)`);
+    const activeStreamIds = Array.from(activeStreams.keys());
+    const results = [];
+    
+    for (const streamId of activeStreamIds) {
+      try {
+        const result = await stopStream(streamId);
+        results.push({ streamId, success: result.success, error: result.error });
+      } catch (error) {
+        console.error(`[StreamingService] Error stopping stream ${streamId}:`, error);
+        results.push({ streamId, success: false, error: error.message });
+      }
+    }
+    
+    const successCount = results.filter(r => r.success).length;
+    const failCount = results.filter(r => !r.success).length;
+    
+    console.log(`[StreamingService] Stopped ${successCount} streams successfully, ${failCount} failed`);
+    return {
+      success: failCount === 0,
+      message: `Stopped ${successCount} streams successfully${failCount > 0 ? `, ${failCount} failed` : ''}`,
+      results
+    };
+  } catch (error) {
+    console.error('[StreamingService] Error stopping all streams:', error);
+    return { success: false, error: error.message };
+  }
+}
+
 module.exports = {
   startStream,
   stopStream,
+  stopAllStreams,
   isStreamActive,
   getActiveStreams,
   getStreamLogs,
